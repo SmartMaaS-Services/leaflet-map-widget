@@ -1,8 +1,10 @@
 {
   "name": "leaflet-map",
   "dependencies": {
-    "leaflet": "1.3.1",
-    "heatmap.js-amd": "latest"
+    "leaflet": "^1.6.0",
+    "Leaflet.awesome-markers": "^2.0.2",
+    "heatmap.js-amd": "latest",
+    "leaflet.markercluster": "^1.4.1"
   },
   "devDependencies": {},
   "exportsOverride": {
@@ -12,6 +14,39 @@
       ],
       "css": [
         "dist/leaflet.css"
+      ],
+      "css/images": [
+        "dist/images/layers.png",
+        "dist/images/layers-2x.png",
+        "dist/images/marker-icon.png",
+        "dist/images/marker-icon-2x.png",
+        "dist/images/marker-shadow.png"
+      ]
+    },
+    "Leaflet.awesome-markers": {
+      "js": [
+        "dist/leaflet.awesome-markers.min.js"
+      ],
+      "css": [
+        "dist/leaflet.awesome-markers.css"
+      ],
+      "css/images": [
+        "dist/images/markers-matte.png",
+        "dist/images/markers-matte@2x.png",
+        "dist/images/markers-plain.png",
+        "dist/images/markers-shadow.png",
+        "dist/images/markers-shadow@2x.png",
+        "dist/images/markers-soft.png",
+        "dist/images/markers-soft@2x.png"
+      ]
+    },
+    "leaflet.markercluster": {
+      "js": [
+        "dist/leaflet.markercluster-src.js"
+      ],
+      "css": [
+        "dist/MarkerCluster.css",
+        "dist/MarkerCluster.Default.css"
       ]
     },
     "heatmap.js-amd": {

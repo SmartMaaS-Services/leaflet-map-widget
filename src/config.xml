@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<widget xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="CoNWeT" name="leaflet-map" version="0.1.0">
+<widget xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="CoNWeT" name="leaflet-map" version="0.2.0">
 
     <details>
         <title>Leaflet map viewer</title>
@@ -17,20 +17,110 @@
     </details>
 
     <preferences>
-        <preference name="initialCenter" type="text" label="Initial Location" description="Decimal coordinates where map will be centered on load (e.g. `52, 5`). Leave this setting empty if you don't want to center the map at init. Remember to change the initial zoom level if you provide an initial location." default="" />
-        <preference name="initialZoom" type="text" label="Initial Zoom Level" description="Initial zoom level. From 1 to 22, where '1' represents the furthest level and '22' the maximum zoom level." default="3" />
-        <preference name="minzoom" label="Min Zoom" type="text" description="Minimun zoom allowed" default="4" />
-        <preference name="maxzoom" label="Max Zoom" type="text" description="Maximum zoom allowed" default="18" />
+        <preference
+                name="initialCenter"
+                label="Initial Location"
+                type="text"
+                description="Decimal coordinates where map will be centered on load (e.g. `52, 5`). Leave this setting empty if you don't want to center the map at init. Remember to change the initial zoom level if you provide an initial location."
+                default=""
+        />
+        <preference
+                name="initialZoom"
+                label="Initial Zoom Level"
+                type="text"
+                description="Initial zoom level. From 1 to 18, where '1' represents the furthest level and '18' the maximum zoom level."
+                default="3"
+        />
+        <preference
+                name="minzoom"
+                label="Min Zoom"
+                type="text"
+                description="Minimun zoom allowed"
+                default="4"
+        />
+        <preference
+                name="maxzoom"
+                label="Max Zoom"
+                type="text"
+                description="Maximum zoom allowed"
+                default="18"
+        />
+        <preference
+                name="iconName"
+                label="Marker Icon"
+                type="text"
+                description="Name of the icon. Leaflet.awesome-markers Plugin (e.g. L.AwesomeMarkers.icon({icon: 'coffee', markerColor: 'red'}) )"
+                default=""
+        />
+        <preference
+                name="markerColor"
+                label="Marker Color"
+                type="text"
+                description="Color of the marker. Leaflet.awesome-markers Plugin (e.g. L.AwesomeMarkers.icon({icon: 'coffee', markerColor: 'red'}) )"
+                default=""
+        />
+        <preference
+                name="startPointMarkerLine"
+                label="Line Startpoint Marker Icon"
+                type="text"
+                description="Identical to the previous field 'Marker icon', except that here a marker can be defined for the startpoint of a line.
+                For example, the startpoint of a line can be set with a marker like a car-icon and the destination with a marker like a home-icon. If the field remains the same, no marker is set."
+                default=""
+        />
+        <preference
+                name="endPointMarkerLine"
+                label="Line Endpoint Marker Icon"
+                type="text"
+                description="Identical to the previous field 'Marker icon', except that here a marker can be defined for the endpoint of a line.
+                For example, the endpoint of a line can be set with a marker like a car-icon and the destination with a marker like a home-icon. If the field remains the same, no marker is set."
+                default=""
+        />
     </preferences>
 
     <wiring>
-        <inputendpoint name="poiInput" type="text" label="Insert/Update PoI" description="Insert or update a Point of Interest." friendcode="poi poi-list"/>
-        <inputendpoint name="replacePoIs" type="text" label="Replace PoIs" description="Replace all the rendered PoIs by the ones provided in the event." friendcode="poi poi-list"/>
-        <inputendpoint name="deletePoiInput" type="text" label="Delete PoI" description="Removes one or more point of interests from the map." friendcode="poi poi-list" />
-        <inputendpoint name="heatmap" type="text" label="Add heatmap layer" description="Add a heatmap layer to the map" friendcode="leaflet-heatmap"/>
+        <inputendpoint
+                name="poiInput"
+                type="text"
+                label="Insert/Update PoI"
+                description="Insert or update a Point of Interest."
+                friendcode="poi poi-list"
+        />
+        <inputendpoint
+                name="replacePoIs"
+                type="text"
+                label="Replace PoIs"
+                description="Replace all the rendered PoIs by the ones provided in the event."
+                friendcode="poi poi-list"
+        />
+        <inputendpoint
+                name="deletePoiInput"
+                type="text"
+                label="Delete PoI"
+                description="Removes one or more point of interests from the map."
+                friendcode="poi poi-list"
+        />
+        <inputendpoint
+                name="heatmap"
+                type="text"
+                label="Add heatmap layer"
+                description="Add a heatmap layer to the map"
+                friendcode="leaflet-heatmap"
+        />
 
-        <outputendpoint name="poiOutput" type="text" label="PoI selected" description="A PoI has been selected on the map" friendcode="poi"/>
-        <outputendpoint name="poiListOutput" type="text" label="Visible PoIs" description="List of visible PoIs" friendcode="poi-list"/>
+        <outputendpoint
+                name="poiOutput"
+                type="text"
+                label="PoI selected"
+                description="A PoI has been selected on the map"
+                friendcode="poi"
+        />
+        <outputendpoint
+                name="poiListOutput"
+                type="text"
+                label="Visible PoIs"
+                description="List of visible PoIs"
+                friendcode="poi-list"
+        />
     </wiring>
 
     <contents src="index.html" useplatformstyle="true"/>
