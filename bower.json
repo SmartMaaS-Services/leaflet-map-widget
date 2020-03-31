@@ -4,7 +4,8 @@
     "leaflet": "^1.6.0",
     "Leaflet.awesome-markers": "^2.0.2",
     "heatmap.js-amd": "latest",
-    "leaflet.markercluster": "^1.4.1"
+    "leaflet.markercluster": "^1.4.1",
+    "Leaflet.Polyline.SnakeAnim": "https://github.com/PitouGames/Leaflet.Polyline.SnakeAnim.git#37e3cac418860ffbb6a0a3ab34b61ca62e947894"
   },
   "devDependencies": {},
   "exportsOverride": {
@@ -47,6 +48,11 @@
       "css": [
         "dist/MarkerCluster.css",
         "dist/MarkerCluster.Default.css"
+      ]
+    },
+    "Leaflet.Polyline.SnakeAnim": {
+      "js": [
+        "L.Polyline.SnakeAnim.js"
       ]
     },
     "heatmap.js-amd": {
