@@ -14,32 +14,29 @@
 
     var PoIs = {};
     var extraMarkers = {};
-    var map;
-    var baseMaps;
-    var markerClusterGroup;
+    var map, baseMaps, markerClusterGroup, layerGroup;
 
     // Leaflet.awesome-markers range of colours except white
     var colors = ['red', 'blue', 'green', 'purple', 'orange', 'darkred', 'lightred', 'beige', 'darkblue', 'darkgreen', 'cadetblue', 'darkpurple', 'pink', 'lightblue', 'lightgreen', 'gray', 'black', 'lightgray'];
 
     var TileLayer = {
-        CartoDB_Voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        CartoDB_Voyager: L.tileLayer(`${window.location.protocol}//{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png`, {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 19}),
+            maxZoom: 19
+        }),
+        CartoDB_Positron: L.tileLayer(`${window.location.protocol}//{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png`, {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        }),
 
-        OSM_Mapnik: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        OSM_Mapnik: L.tileLayer(`${window.location.protocol}//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`, {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }),
 
-        OSM_DE: L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', {
+        OSM_DE: L.tileLayer(`${window.location.protocol}//{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png`, {
         maxZoom: 18,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }),
-
-        default: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> attribution: Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
         })
     };
 
@@ -58,6 +55,11 @@
 
             sendVisiblePoIs();
             centerMapPoIs();
+
+            if (MashupPlatform.prefs.get("useSnakeAnimation") === true && layerGroup.getLayers().length > 0) {
+                run_snake_animation();
+                setInterval(run_snake_animation, 3000);
+            }
         });
 
         MashupPlatform.wiring.registerCallback('replacePoIs', function (poi_info) {
@@ -71,6 +73,11 @@
 
             sendVisiblePoIs();
             centerMapPoIs();
+
+            if (MashupPlatform.prefs.get("useSnakeAnimation") === true && layerGroup.getLayers().length > 0) {
+                run_snake_animation();
+                setInterval(run_snake_animation, 3000);
+            }
         });
 
         MashupPlatform.wiring.registerCallback("heatmap", function (config) {
@@ -87,6 +94,10 @@
             }
             poi_info.forEach(removePoI);
             centerMapPoIs();
+
+            if (MashupPlatform.prefs.get("useSnakeAnimation") === true && layerGroup.getLayers().length > 0) {
+                setInterval(run_snake_animation, 3000);
+            }
         });
 
     };
@@ -102,6 +113,11 @@
             throw new MashupPlatform.wiring.EndpointTypeError();
         }
         return data;
+    };
+
+    // Plugin https://github.com/PitouGames/Leaflet.Polyline.SnakeAnim
+    var run_snake_animation = function run_snake_animation() {
+        layerGroup.snakeIn();
     };
 
     var build_base_style = function build_base_style(poi_info) {
@@ -138,17 +154,15 @@
             case 'MultiPolyline':
                 poi_info.polyline_style = {
                     color: color,
-                    weight: 3,
+                    weight: 4,
                     dashArray: '10,10'
                 };
 
-                // default markerColor is 'home'
                 if (MashupPlatform.prefs.get("startPointMarkerLine").trim() !== "") {
                     startIcon = MashupPlatform.prefs.get("startPointMarkerLine").trim();
                     poi_info.startIcon = L.AwesomeMarkers.icon({icon: startIcon, prefix: 'fa', markerColor: color, iconColor: '#fff'});
                 }
 
-                // default markerColor is 'home'
                 if (MashupPlatform.prefs.get("endPointMarkerLine").trim() !== "") {
                     endIcon = MashupPlatform.prefs.get("endPointMarkerLine").trim();
                     poi_info.endIcon = L.AwesomeMarkers.icon({icon: endIcon, prefix: 'fa', markerColor: color, iconColor: '#fff'})
@@ -159,35 +173,51 @@
     };
 
     var build_map = function build_map() {
+        var baseLayer;
         var initialCenter = MashupPlatform.prefs.get("initialCenter").split(",").map(Number);
         if (initialCenter.length != 2 || !Number.isFinite(initialCenter[0]) || !Number.isFinite(initialCenter[1])) {
             initialCenter = [0, 0];
         }
 
+        if (MashupPlatform.prefs.get("tileLayer").trim() === '') {
+            baseLayer = TileLayer.OSM_DE;
+        } else {
+            if (MashupPlatform.prefs.get("tileLayer").trim() !== 'CartoDB_Voyager' && MashupPlatform.prefs.get("tileLayer").trim() !== 'CartoDB_Positron' && MashupPlatform.prefs.get("tileLayer").trim() !== 'OSM_Mapnik' && MashupPlatform.prefs.get("tileLayer").trim() !== 'OSM_DE') {
+                throw new MashupPlatform.wiring.EndpointValueError("Only the tile layers: 'CartoDB_Voyager', 'CartoDB_Positron', 'OSM_Mapnik' and 'OSM_DE' are supported.");
+            } else {
+                baseLayer = TileLayer[`${MashupPlatform.prefs.get("tileLayer").trim()}`];
+            }
+        }
+
         map = new L.Map('mapid', {
             center: new L.LatLng(initialCenter[1], initialCenter[0]),
             zoom: parseInt(MashupPlatform.prefs.get('initialZoom'), 10),
-            layers: [TileLayer.OSM_Mapnik, TileLayer.OSM_DE, TileLayer.CartoDB_Voyager, TileLayer.default]
         });
+        baseLayer.addTo(map);
 
         baseMaps = {
-            "OSM Mapnik": TileLayer.OSM_Mapnik,
-            "OSM DE": TileLayer.OSM_DE,
             "CartoDB Voyager": TileLayer.CartoDB_Voyager,
-            "OSM Default": TileLayer.default,
+            "CartoDB Positron": TileLayer.CartoDB_Positron,
+            "OSM Mapnik": TileLayer.OSM_Mapnik,
+            "OSM DE": TileLayer.OSM_DE
         };
 
         L.control.layers(baseMaps, null).addTo(map);
 
         // Initializing a MarkerClusterGroup for the cluster
         markerClusterGroup = L.markerClusterGroup();
+        layerGroup = L.layerGroup();
 
         map.on("moveend", sendVisiblePoIs);
         map.on("zoomend", sendVisiblePoIs);
     };
 
     var registerPoI = function registerPoI(poi_info) {
-        var poi, marker, marker_location_A, marker_location_B;
+        var poi, marker_location_A, marker_location_B;
+
+        var useclustering = MashupPlatform.prefs.get("useclustering");
+        var useSnakeAnimation  = MashupPlatform.prefs.get("useSnakeAnimation");
+
         poi = PoIs[poi_info.id];
 
         build_base_style(poi_info);
@@ -198,17 +228,23 @@
                     // L.geoJSON works out of the box with coordinates that follow the GeoJSON spec (lon/lat).
                     // Points are handled differently than polylines and polygons
                     // pointToLayer: This function is passed a LatLng and should return an instance of ILayer, in this case likely a Marker or CircleMarker
-                    marker = L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates }], {
+                    L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates }], {
                         pointToLayer: function (feature, latlng) {
                             if (poi == null) {
                                 poi = L.marker(latlng,{icon: poi_info.icon });
+                                if (useclustering === true) markerClusterGroup.addLayer(poi)
                                 return poi;
                             } else {
-                                poi.setLatLng(latlng);
+                                if (useclustering === true) {
+                                    if (markerClusterGroup.hasLayer(PoIs[poi_info.id])) {
+                                        markerClusterGroup.getLayer(L.stamp(PoIs[poi_info.id])).setLatLng(latlng);
+                                    }
+                                } else {
+                                    poi.setLatLng(latlng);
+                                }
                             }
                         }
                     });
-
                     break;
 
                 case 'Polygon':
@@ -255,25 +291,10 @@
                     var line_color = poi_info.polyline_style.color;
 
                     if (poi == null) {
-                        L.geoJSON([{ "type": "LineString", "coordinates": poi_info.location.coordinates }], {
-                            style: function (feature) {
-                                // Adjustment of colors that cannot be displayed using L.Polyline.
-                                if(poi_info.polyline_style.color === 'lightred') line_color = 'salmon';
-                                if(poi_info.polyline_style.color === 'darkpurple') line_color = 'darkmagenta';
-                                if(poi_info.polyline_style.color === 'beige') line_color = 'tan';
-
-                                return {color: line_color,  weight: poi_info.polyline_style.weight , dashArray: poi_info.polyline_style.dashArray};
-                            },
-                            onEachFeature: function (feature, layer) {
-                                poi = layer;
-                            }
-                        }).addTo(map);
-
-
                         // Markers are set on the start (marker_location_A) coordinates as well as on the target (marker_location_B) coordinates
                         // of the coordinate series to ensure an improved overview.
                         if(poi_info.hasOwnProperty('startIcon')) {
-                            marker_location_A = L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[0] }],{
+                            L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[0] }],{
                                 pointToLayer: function (feature, latlng) {
                                     return L.marker(latlng,{icon: poi_info.startIcon });
                                 },
@@ -281,41 +302,16 @@
                                     layer.extraMarker = 'true';
                                     layer.extraMarkerId = poi_info.id;
                                     extraMarkers['extraMarker_'+L.stamp(layer)] = layer;
-                                    layer.bindPopup("<b>Start: " + poi_info.id + "</b>");
+                                    layer.bindPopup("<b>Point of departure: " + poi_info.id + "</b>");
+                                    marker_location_A = layer;
+                                    if (useclustering === true) markerClusterGroup.addLayer(marker_location_A);
+                                    if (useSnakeAnimation === true) {
+                                        layerGroup.addLayer(marker_location_A);
+                                        layerGroup._snakingLayers.push(marker_location_A);
+                                    }
                                 }
                             });
                         }
-
-                        if (poi_info.hasOwnProperty('endIcon')) {
-                            marker_location_B = L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[poi_info.location.coordinates.length - 1] }], {
-                                pointToLayer: function (feature, latlng) {
-                                    return L.marker(latlng,{icon: poi_info.endIcon });
-                                },
-                                onEachFeature: function (feature, layer) {
-                                    layer.extraMarker = 'true';
-                                    layer.extraMarkerId = poi_info.id;
-                                    extraMarkers['extraMarker_'+L.stamp(layer)] = layer;
-                                    layer.bindPopup("<b>Target: " + poi_info.id + "</b>");
-                                }
-                            });
-                        }
-
-                    } else {
-                        // remove old layer for update
-                        map.eachLayer(function (layer) {
-                            if ('data' in layer) {
-                                if (layer.data.id === poi.data.id) {
-                                    map.removeLayer(layer);
-                                }
-                            }
-                            // remove extraMarker for update
-                            if ('extraMarker' in layer) {
-                                if (layer.extraMarkerId === poi.data.id && markerClusterGroup.hasLayer(layer)) {
-                                    markerClusterGroup.removeLayer(layer);
-                                    map.removeLayer(layer);
-                                }
-                            }
-                        });
 
                         L.geoJSON([{ "type": "LineString", "coordinates": poi_info.location.coordinates }], {
                             style: function (feature) {
@@ -324,19 +320,103 @@
                                 if(poi_info.polyline_style.color === 'darkpurple') line_color = 'darkmagenta';
                                 if(poi_info.polyline_style.color === 'beige') line_color = 'tan';
 
-                                return {color: line_color, weight: poi_info.polyline_style.weight , dashArray: poi_info.polyline_style.dashArray};
+                                if (useSnakeAnimation === true) {
+                                    return {color: line_color, weight: poi_info.polyline_style.weight, dashArray: poi_info.polyline_style.dashArray, snakingSpeed: 200, followHead: false};
+                                }
+                                else {
+                                    return {color: line_color, weight: poi_info.polyline_style.weight, dashArray: poi_info.polyline_style.dashArray};
+                                }
                             },
                             onEachFeature: function (feature, layer) {
-                                // set poi to empty object and assign the new layer to poi
-                                for (var key in poi) {
-                                    delete poi[key];
-                                }
                                 poi = layer;
+                                if (useSnakeAnimation === true) {
+                                    layerGroup.addLayer(layer);
+                                    layerGroup._snakingLayers.push(layer);
+                                }
                             }
-                        }).addTo(map);
+                        });
+
+                        if (poi_info.hasOwnProperty('endIcon')) {
+                            L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[poi_info.location.coordinates.length - 1] }], {
+                                pointToLayer: function (feature, latlng) {
+                                    return L.marker(latlng,{icon: poi_info.endIcon });
+                                },
+                                onEachFeature: function (feature, layer) {
+                                    layer.extraMarker = 'true';
+                                    layer.extraMarkerId = poi_info.id;
+                                    extraMarkers['extraMarker_'+L.stamp(layer)] = layer;
+                                    layer.bindPopup("<b>Travel destination: " + poi_info.id + "</b>");
+                                    marker_location_B = layer;
+                                    if (useclustering === true) markerClusterGroup.addLayer(marker_location_B);
+                                    if (useSnakeAnimation === true) {
+                                        layerGroup.addLayer(marker_location_B);
+                                        layerGroup._snakingLayers.push(marker_location_B);
+                                    }
+
+                                }
+                            });
+                        }
+
+                    } else {
+                        // remove layer in layerGroup._snakingLayers for update
+                        if (useSnakeAnimation === true) {
+                            layerGroup.snakeReset();
+
+                            //set snakeRemoveLayers false to receive all layers in layerGroup
+                            layerGroup.options.snakeRemoveLayers = false;
+
+                            for (var snakelayer in layerGroup._snakingLayers) {
+                                if (layerGroup._snakingLayers.hasOwnProperty(snakelayer)) {
+                                    if ('extraMarker' in layerGroup._snakingLayers[snakelayer] && layerGroup._snakingLayers[snakelayer] instanceof L.Marker) {
+                                        if (layerGroup._snakingLayers[snakelayer].extraMarkerId === poi.data.id && layerGroup.hasLayer(layerGroup._snakingLayers[snakelayer]) ) {
+                                            delete layerGroup._snakingLayers[snakelayer];
+                                        }
+                                    }
+                                    if (layerGroup._snakingLayers[snakelayer] instanceof L.Polyline ) {
+                                        if (layerGroup._snakingLayers[snakelayer].data.id === poi.data.id) {
+                                            delete layerGroup._snakingLayers[snakelayer];
+                                        }
+                                    }
+                                }
+                            }
+
+                            // remove undefined layers from layerGroup._snakingLayers
+                            layerGroup._snakingLayers = layerGroup._snakingLayers.filter(function (element) {
+                                return element;
+                            });
+                        }
+
+                        // remove old layer for update
+                        map.eachLayer(function (layer) {
+                            if ('data' in layer) {
+                                if (layer.data.id === poi.data.id) {
+                                    if (layerGroup.hasLayer(layer)) {
+                                        layerGroup.removeLayer(layer);
+                                        map.removeLayer(layer);
+                                    } else {
+                                        map.removeLayer(layer);
+                                    }
+                                }
+                            }
+                            // remove extraMarker for update
+                            if ('extraMarker' in layer) {
+                                if (layer.extraMarkerId === poi.data.id) {
+                                    if (markerClusterGroup.hasLayer(layer)) {
+                                        markerClusterGroup.removeLayer(layer);
+                                    }
+                                    if (layerGroup.hasLayer(layer)) {
+                                        layerGroup.removeLayer(layer);
+
+                                    }
+                                    map.removeLayer(layer);
+                                }
+                            }
+                        });
+
+                        if (useSnakeAnimation === true) layerGroup.options.snakeRemoveLayers = true;
 
                         if(poi_info.hasOwnProperty('startIcon')) {
-                            marker_location_A = L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[0] }],{
+                            L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[0] }],{
                                 pointToLayer: function (feature, latlng) {
                                     extraMarkers[poi_info.id] = L.marker(latlng,{icon: poi_info.startIcon });
                                     return extraMarkers[poi_info.id];
@@ -346,12 +426,42 @@
                                     layer.extraMarkerId = poi_info.id;
                                     extraMarkers['extraMarker_'+L.stamp(layer)] = layer;
                                     layer.bindPopup("<b>Start: " + poi_info.id + "</b>");
+                                    marker_location_A = layer;
+                                    if (useclustering === true) markerClusterGroup.addLayer(marker_location_A);
+                                    if (useSnakeAnimation === true) {
+                                        layerGroup.addLayer(marker_location_A);
+                                        layerGroup._snakingLayers.push(marker_location_A);
+                                    }
                                 }
                             });
                         }
 
+                        L.geoJSON([{ "type": "LineString", "coordinates": poi_info.location.coordinates }], {
+                            style: function (feature) {
+                                // Adjustment of colors that cannot be displayed using L.Polyline.
+                                if(poi_info.polyline_style.color === 'lightred') line_color = 'salmon';
+                                if(poi_info.polyline_style.color === 'darkpurple') line_color = 'darkmagenta';
+                                if(poi_info.polyline_style.color === 'beige') line_color = 'tan';
+
+                                if (useSnakeAnimation === true) {
+                                    return {color: line_color, weight: poi_info.polyline_style.weight, dashArray: poi_info.polyline_style.dashArray, snakingSpeed: 200, followHead: false};
+                                }
+                                else {
+                                    return {color: line_color, weight: poi_info.polyline_style.weight, dashArray: poi_info.polyline_style.dashArray};
+                                }
+                            },
+                            onEachFeature: function (feature, layer) {
+                                poi = {};
+                                poi = layer;
+                                if (useSnakeAnimation === true) {
+                                    layerGroup.addLayer(layer);
+                                    layerGroup._snakingLayers.push(layer);
+                                }
+                            }
+                        });
+
                         if (poi_info.hasOwnProperty('endIcon')) {
-                            marker_location_B = L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[poi_info.location.coordinates.length - 1] }], {
+                            L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[poi_info.location.coordinates.length - 1] }], {
                                 pointToLayer: function (feature, latlng) {
                                     extraMarkers[poi_info.id] = L.marker(latlng,{icon: poi_info.endIcon });
                                     return extraMarkers[poi_info.id];
@@ -361,6 +471,12 @@
                                     layer.extraMarkerId = poi_info.id;
                                     extraMarkers['extraMarker_'+L.stamp(layer)] = layer;
                                     layer.bindPopup("<b>Target: " + poi_info.id + "</b>");
+                                    marker_location_B = layer;
+                                    if (useclustering === true) markerClusterGroup.addLayer(marker_location_B);
+                                    if (useSnakeAnimation === true) {
+                                        layerGroup.addLayer(marker_location_B);
+                                        layerGroup._snakingLayers.push(marker_location_B);
+                                    }
                                 }
                             });
                         }
@@ -384,10 +500,19 @@
             }
         }
 
-        if (marker != null) markerClusterGroup.addLayer(marker);
-        if (marker_location_A != null) markerClusterGroup.addLayer(marker_location_A);
-        if (marker_location_B != null) markerClusterGroup.addLayer(marker_location_B);
-        map.addLayer(markerClusterGroup);
+        if (useclustering === true) {
+            map.addLayer(markerClusterGroup);
+        }
+
+        if (useSnakeAnimation === true && layerGroup.getLayers().length > 0) {
+            map.addLayer(layerGroup);
+        }
+
+        if (!markerClusterGroup.hasLayer(poi) && !layerGroup.hasLayer(poi)) {
+            if (marker_location_A != null) marker_location_A.addTo(map);
+            poi.addTo(map);
+            if (marker_location_B != null) marker_location_B.addTo(map);
+        }
 
         // Save PoI data to send it on the map's outputs
         poi.data = poi_info;
@@ -400,9 +525,19 @@
 
     // Remove all layers
     var removeAllPoIs = function removeAllPoIs() {
-        // First clear MarkerClusterGroup.
+        // Clear MarkerClusterGroup.
         if(markerClusterGroup.getLayers().length > 0) {
             markerClusterGroup.clearLayers();
+        }
+
+        // Clear layerGroup and layerGroup._snakingLayers
+        if(layerGroup.getLayers().length > 0) {
+            layerGroup.snakeReset();
+            layerGroup.options.snakeRemoveLayers = false;
+            layerGroup._snakingLayers = [];
+            layerGroup.clearLayers();
+
+            if (MashupPlatform.prefs.get("useSnakeAnimation") === true) layerGroup.options.snakeRemoveLayers = true;
         }
 
         map.eachLayer(function (layer) {
@@ -418,16 +553,67 @@
 
     // Remove a marker from the map
     var removePoI = function removePoI(poi) {
-        // First check whether extraMarkers in the MarkerClusterGroup need to be removed.
-        if(markerClusterGroup.getLayers().length > 0) {
-            markerClusterGroup.eachLayer(function (layer) {
+        // Check whether layer in the layerGroup or layerGroup._snakingLayers need to be removed.
+        if(layerGroup.getLayers().length > 0) {
+            layerGroup.snakeReset();
+            layerGroup.options.snakeRemoveLayers = false;
+
+            for (var snakelayer in layerGroup._snakingLayers) {
+                if (layerGroup._snakingLayers.hasOwnProperty(snakelayer)) {
+                    if ('extraMarker' in layerGroup._snakingLayers[snakelayer] && layerGroup._snakingLayers[snakelayer] instanceof L.Marker) {
+                        if (layerGroup._snakingLayers[snakelayer].extraMarkerId === poi.id && layerGroup.hasLayer(layerGroup._snakingLayers[snakelayer]) ) {
+                            delete layerGroup._snakingLayers[snakelayer];
+                        }
+                    }
+                    if (layerGroup._snakingLayers[snakelayer] instanceof L.Polyline ) {
+                        if (layerGroup._snakingLayers[snakelayer].data.id === poi.id) {
+                            delete layerGroup._snakingLayers[snakelayer];
+                        }
+                    }
+                }
+            }
+
+            // remove undefined layers from layerGroup._snakingLayers
+            layerGroup._snakingLayers = layerGroup._snakingLayers.filter(function (element) {
+                return element;
+            });
+
+            layerGroup.eachLayer(function (layer) {
                 if ('extraMarker' in layer && layer.extraMarkerId === poi.id) {
-                    markerClusterGroup.removeLayer(layer);
+                    layerGroup.removeLayer(layer);
                 }
             });
         }
 
-        map.removeLayer(PoIs[poi.id]);
+        map.eachLayer(function (layer) {
+            if ('data' in layer) {
+                if (layer.data.id === poi.id) {
+                    if (layerGroup.hasLayer(layer)) {
+                        layerGroup.removeLayer(layer);
+                        map.removeLayer(layer);
+                    } else {
+                        map.removeLayer(layer);
+                    }
+                }
+            }
+            // remove extraMarker for update
+            if ('extraMarker' in layer) {
+                if (layer.extraMarkerId === poi.id) {
+                    if (markerClusterGroup.hasLayer(layer)) {
+                        markerClusterGroup.removeLayer(layer);
+                    }
+                    if (layerGroup.hasLayer(layer)) {
+                        layerGroup.removeLayer(layer);
+
+                    }
+                    map.removeLayer(layer);
+                }
+            }
+        });
+
+        if (MashupPlatform.prefs.get("useSnakeAnimation") === true) layerGroup.options.snakeRemoveLayers = true;
+
+        if (map.hasLayer(PoIs[poi.id])) map.removeLayer(PoIs[poi.id]);
 
         // Remove object from PoIs and extraMarkers
         for (var layer in extraMarkers) {
@@ -436,7 +622,7 @@
             }
         }
 
-        delete PoIs[poi.id];
+        if (PoIs[poi.id] !== undefined) delete PoIs[poi.id];
     };
 
     var centerMapPoIs = function centerMapPoIs() {
@@ -462,17 +648,24 @@
 
                     } else {
                         var latLngs = PoIs[poi].getLatLngs();
-                        for (var coord in latLngs) {
-                            data.push([latLngs[coord].lat, latLngs[coord].lng]);
+                        if (PoIs[poi].getLatLngs().length === 1) {
+                            for (var coord in latLngs[0]) {
+                                data.push([latLngs[0][coord].lat, latLngs[0][coord].lng]);
+                            }
+                        } else {
+                            for (var coord in latLngs) {
+                                data.push([latLngs[coord].lat, latLngs[coord].lng]);
+                            }
+
                         }
                     }
                 }
 
-                boundary = L.polygon([data]).getBounds();
+                boundary = L.polygon([data]);
             }
 
             if (boundary != null) {
-                map.panInsideBounds(boundary);
+                map.fitBounds(boundary.getBounds(), { maxZoom: 18});
             }
         }
     };
