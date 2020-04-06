@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<widget xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="CoNWeT" name="leaflet-map" version="0.2.0">
+<widget xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="CoNWeT" name="leaflet-map" version="0.2.2">
 
     <details>
         <title>Leaflet map viewer</title>
@@ -24,13 +24,15 @@
         <preference name="maxzoom" label="Max Zoom" type="text" description="Maximum zoom allowed" default="18"/>
         <preference name="iconName" label="Marker Icon" type="text" description="Name of the icon. Leaflet.awesome-markers Plugin (e.g. L.AwesomeMarkers.icon({icon: 'coffee', markerColor: 'red'}) )" default=""/>
         <preference name="markerColor" label="Marker Color" type="text" description="Color of the marker. Leaflet.awesome-markers Plugin (e.g. L.AwesomeMarkers.icon({icon: 'coffee', markerColor: 'red'}) )" default=""/>
-        <preference name="startPointMarkerLine" label="Line Startpoint Marker Icon" type="text"
-                    description="Identical to the previous field 'Marker icon', except that here a marker can be defined for the startpoint of a line. For example, the startpoint of a line can be set with a marker like a car-icon and the destination with a marker like a home-icon. If the field remains the same, no marker is set." default=""/>
-        <preference name="endPointMarkerLine" label="Line Endpoint Marker Icon" type="text"
-                    description="Identical to the previous field 'Marker icon', except that here a marker can be defined for the endpoint of a line. For example, the endpoint of a line can be set with a marker like a car-icon and the destination with a marker like a home-icon. If the field remains the same, no marker is set." default=""/>
-        <preference name="useclustering" label="Use Clustering" type="boolean" description="Mark this option to use clustering for displaying map features" default="false" />
+        <preference name="useClustering" label="Use Clustering" type="boolean" description="Mark this option to use clustering for displaying map features" default="false" />
+        <preference name="useDrawingPath" label="Use Drawing Path Animation" type="boolean" description="Mark this option to activate an automatic drawing of the paths (polyline)." default="false" />
+        <preference name="useMovingMarker" label="Use Moving Mark Animation" type="boolean" description="Mark this option to enable automatic movement of a marker on a path (polyline)." default="false" />
+
         <preference name="useSnakeAnimation" label="Use Snake Animation" type="boolean" description="Mark this option to make polylines animate into existence." default="false" />
-        <preference name="useMotion" label="Use Motion" type="boolean" description="Mark this option to apply animation." default="false" />
+        <preference name="startPointMarkerLine" label="Startpoint Marker Snake Animation" type="text"
+                    description="Identical to the previous field 'Marker icon', except that here a marker can be defined for the startpoint of a line. For example, the startpoint of a line can be set with a marker like a car-icon and the destination with a marker like a home-icon. If the field remains the same, no marker is set." default=""/>
+        <preference name="endPointMarkerLine" label="Endpoint Marker Snake Animation" type="text"
+                    description="Identical to the previous field 'Marker icon', except that here a marker can be defined for the endpoint of a line. For example, the endpoint of a line can be set with a marker like a car-icon and the destination with a marker like a home-icon. If the field remains the same, no marker is set." default=""/>
     </preferences>
 
     <wiring>

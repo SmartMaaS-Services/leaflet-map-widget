@@ -50,7 +50,9 @@ module.exports = function (grunt) {
         copy: {
             main: {
                 files: [
-                    {expand: true, cwd: 'src/js', src: '*', dest: 'build/src/js'}
+                    {expand: true, cwd: 'src/js', src: '*', dest: 'build/src/js'},
+                    {expand: true, cwd: 'node_modules/leaflet.motion/dist', src: 'leaflet.motion.min.js', dest: 'build/lib/lib/js/'},
+                    {expand: true, cwd: 'src/js/plugins', src: 'MovingMarker.js', dest: 'build/src/js/plugins'}
                 ]
             }
         },
@@ -85,6 +87,13 @@ module.exports = function (grunt) {
                         cwd: 'build/lib',
                         src: [
                             'lib/**/*'
+                        ]
+                    },
+                    {
+                        expand: true,
+                        cwd: 'build/lib',
+                        src: [
+                            'lib/js/leaflet.motion.min.js'
                         ]
                     },
                     {
@@ -125,10 +134,14 @@ module.exports = function (grunt) {
                 files: [
                     'node_modules/mock-applicationmashup/dist/MockMP.js',
                     'src/js/*.js',
+                    'node_modules/leaflet.motion/dist/leaflet.motion.min.js',
+                    'src/js/plugins/*.js',
                     'tests/js/*Spec.js'
                 ],
                 exclude: [
                     'src/js/main.js',
+                    'src/js/plugins/MovingMarker.js',
+                    'node_modules/leaflet.motion/dist/leaflet.motion.min.js'
                 ],
                 frameworks: ['jasmine'],
                 reporters: ['progress', 'coverage'],

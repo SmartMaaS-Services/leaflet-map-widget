@@ -12,9 +12,13 @@
 
     "use strict";
 
-    var PoIs = {};
-    var extraMarkers = {};
-    var map, baseMaps, markerClusterGroup, layerGroup;
+    var PoIs = {},
+        extraMarkers = {},
+        map,
+        baseMaps,
+        markerClusterGroup, // Plugin https://github.com/Leaflet/Leaflet.markercluster
+        layerGroup, // Plugin https://github.com/PitouGames/Leaflet.Polyline.SnakeAnim
+        seqGroup; // Plugin https://github.com/Igor-Vladyka/leaflet.motion
 
     // Leaflet.awesome-markers range of colours except white
     var colors = ['red', 'blue', 'green', 'purple', 'orange', 'darkred', 'lightred', 'beige', 'darkblue', 'darkgreen', 'cadetblue', 'darkpurple', 'pink', 'lightblue', 'lightgreen', 'gray', 'black', 'lightgray'];
@@ -60,6 +64,11 @@
                 run_snake_animation();
                 setInterval(run_snake_animation, 3000);
             }
+
+            if (MashupPlatform.prefs.get("useDrawingPath") === true) {
+                run_motion_animation();
+                setInterval(run_motion_animation, 62000);
+            }
         });
 
         MashupPlatform.wiring.registerCallback('replacePoIs', function (poi_info) {
@@ -77,6 +86,11 @@
             if (MashupPlatform.prefs.get("useSnakeAnimation") === true && layerGroup.getLayers().length > 0) {
                 run_snake_animation();
                 setInterval(run_snake_animation, 3000);
+            }
+
+            if (MashupPlatform.prefs.get("useDrawingPath") === true) {
+                run_motion_animation();
+                setInterval(run_motion_animation, 62000);
             }
         });
 
@@ -96,7 +110,13 @@
             centerMapPoIs();
 
             if (MashupPlatform.prefs.get("useSnakeAnimation") === true && layerGroup.getLayers().length > 0) {
+                run_snake_animation();
                 setInterval(run_snake_animation, 3000);
+            }
+
+            if (MashupPlatform.prefs.get("useDrawingPath") === true) {
+                run_motion_animation();
+                setInterval(run_motion_animation, 62000);
             }
         });
 
@@ -118,6 +138,40 @@
     // Plugin https://github.com/PitouGames/Leaflet.Polyline.SnakeAnim
     var run_snake_animation = function run_snake_animation() {
         layerGroup.snakeIn();
+    };
+
+    // Plugin https://github.com/Igor-Vladyka/leaflet.motion
+    var run_motion_animation = function run_motion_animation() {
+        if (map.hasLayer(seqGroup)) {
+            map.removeLayer(seqGroup);
+        }
+        var polylineMotionCollection = [];
+        var marker = (MashupPlatform.prefs.get("iconName").trim() !== "") ? MashupPlatform.prefs.get("iconName").trim() : 'circle'; // default markerColor is 'circle'
+        var markerColor = (MashupPlatform.prefs.get("markerColor").trim() !== "") ? MashupPlatform.prefs.get("markerColor").trim() :'blue';
+
+        for (var poi in PoIs) {
+            if (PoIs[poi] instanceof L.Polyline) {
+                polylineMotionCollection.push(
+                    L.motion.polyline(PoIs[poi].getLatLngs(), {
+                        color: '#0099cc',
+                        weight: 4,
+                        dashArray: '10,10'
+                    }, {
+                        easing: L.Motion.Ease.easeInOutQuad
+                    }, {
+                        removeOnEnd: false,
+                        icon: L.divIcon({
+                            html: '<span class="fa-stack" style="vertical-align: top;"><i class="fas fa-circle fa-stack-2x fa-flip-horizontal" style="color: '+ markerColor +'"></i><i class="fas fa-'+ marker +' fa-stack-1x fa-inverse fa-flip-horizontal"></i></span>'
+                        })
+                    }).motionDuration(60000).bindPopup(PoIs[poi].getPopup())
+                )
+            }
+        }
+
+        // as L.featureGroup - to run all animation at same time
+        seqGroup = L.motion.group(polylineMotionCollection);
+        seqGroup.addTo(map);
+        seqGroup.motionStart();
     };
 
     var build_base_style = function build_base_style(poi_info) {
@@ -158,16 +212,27 @@
                     dashArray: '10,10'
                 };
 
-                if (MashupPlatform.prefs.get("startPointMarkerLine").trim() !== "") {
-                    startIcon = MashupPlatform.prefs.get("startPointMarkerLine").trim();
-                    poi_info.startIcon = L.AwesomeMarkers.icon({icon: startIcon, prefix: 'fa', markerColor: color, iconColor: '#fff'});
+                //TODO: Control
+                if (MashupPlatform.prefs.get("useDrawingPath") === false && MashupPlatform.prefs.get("useMovingMarker") === false) {
+                    if (MashupPlatform.prefs.get("startPointMarkerLine").trim() !== "") {
+                        startIcon = MashupPlatform.prefs.get("startPointMarkerLine").trim();
+                        poi_info.startIcon = L.AwesomeMarkers.icon({icon: startIcon, prefix: 'fa', markerColor: color, iconColor: '#fff'});
+                    }
+
+                    if (MashupPlatform.prefs.get("endPointMarkerLine").trim() !== "") {
+                        endIcon = MashupPlatform.prefs.get("endPointMarkerLine").trim();
+                        poi_info.endIcon = L.AwesomeMarkers.icon({icon: endIcon, prefix: 'fa', markerColor: color, iconColor: '#fff'})
+                    }
                 }
 
-                if (MashupPlatform.prefs.get("endPointMarkerLine").trim() !== "") {
-                    endIcon = MashupPlatform.prefs.get("endPointMarkerLine").trim();
-                    poi_info.endIcon = L.AwesomeMarkers.icon({icon: endIcon, prefix: 'fa', markerColor: color, iconColor: '#fff'})
-                }
+                if (MashupPlatform.prefs.get("useMovingMarker") === true && MashupPlatform.prefs.get("useDrawingPath") === false) {
+                    if (poi_info.icon.indexOf("ngsientity2poi") >= 0) {
+                        icon = (MashupPlatform.prefs.get("iconName").trim() !== "") ? MashupPlatform.prefs.get("iconName").trim() : 'circle'; // default markerColor is 'circle'
+                        poi_info.icon = L.AwesomeMarkers.icon({icon: icon, prefix: 'fa', markerColor: color, iconColor: '#fff'});
 
+                    }
+                }
+                break;
             }
         }
     };
@@ -206,6 +271,8 @@
 
         // Initializing a MarkerClusterGroup for the cluster
         markerClusterGroup = L.markerClusterGroup();
+
+        // Initializing a layerGroup for the snake animation
         layerGroup = L.layerGroup();
 
         map.on("moveend", sendVisiblePoIs);
@@ -215,8 +282,10 @@
     var registerPoI = function registerPoI(poi_info) {
         var poi, marker_location_A, marker_location_B;
 
-        var useclustering = MashupPlatform.prefs.get("useclustering");
-        var useSnakeAnimation  = MashupPlatform.prefs.get("useSnakeAnimation");
+        var useclustering = MashupPlatform.prefs.get("useClustering");
+        var useSnakeAnimation = MashupPlatform.prefs.get("useSnakeAnimation");
+        var useDrawingPathAnimation  = MashupPlatform.prefs.get("useDrawingPath");
+        var useMovingMarker = MashupPlatform.prefs.get("useMovingMarker");
 
         poi = PoIs[poi_info.id];
 
@@ -293,7 +362,7 @@
                     if (poi == null) {
                         // Markers are set on the start (marker_location_A) coordinates as well as on the target (marker_location_B) coordinates
                         // of the coordinate series to ensure an improved overview.
-                        if(poi_info.hasOwnProperty('startIcon')) {
+                        if(poi_info.hasOwnProperty('startIcon') && useDrawingPathAnimation === false) {
                             L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[0] }],{
                                 pointToLayer: function (feature, latlng) {
                                     return L.marker(latlng,{icon: poi_info.startIcon });
@@ -336,7 +405,7 @@
                             }
                         });
 
-                        if (poi_info.hasOwnProperty('endIcon')) {
+                        if (poi_info.hasOwnProperty('endIcon')  && useDrawingPathAnimation === false) {
                             L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[poi_info.location.coordinates.length - 1] }], {
                                 pointToLayer: function (feature, latlng) {
                                     return L.marker(latlng,{icon: poi_info.endIcon });
@@ -415,7 +484,7 @@
 
                         if (useSnakeAnimation === true) layerGroup.options.snakeRemoveLayers = true;
 
-                        if(poi_info.hasOwnProperty('startIcon')) {
+                        if(poi_info.hasOwnProperty('startIcon')  && useDrawingPathAnimation === false) {
                             L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[0] }],{
                                 pointToLayer: function (feature, latlng) {
                                     extraMarkers[poi_info.id] = L.marker(latlng,{icon: poi_info.startIcon });
@@ -460,7 +529,7 @@
                             }
                         });
 
-                        if (poi_info.hasOwnProperty('endIcon')) {
+                        if (poi_info.hasOwnProperty('endIcon') && useDrawingPathAnimation === false) {
                             L.geoJSON([{ "type": "Point", "coordinates": poi_info.location.coordinates[poi_info.location.coordinates.length - 1] }], {
                                 pointToLayer: function (feature, latlng) {
                                     extraMarkers[poi_info.id] = L.marker(latlng,{icon: poi_info.endIcon });
@@ -509,9 +578,25 @@
         }
 
         if (!markerClusterGroup.hasLayer(poi) && !layerGroup.hasLayer(poi)) {
-            if (marker_location_A != null) marker_location_A.addTo(map);
-            poi.addTo(map);
-            if (marker_location_B != null) marker_location_B.addTo(map);
+            if (marker_location_A != null && useMovingMarker === false) marker_location_A.addTo(map);
+            if ((useDrawingPathAnimation === true && !(poi instanceof L.Polyline)) || (useDrawingPathAnimation === false && poi instanceof L.Polyline)) {
+                poi.addTo(map);
+
+                // https://github.com/zjffun/Leaflet.MovingMarker
+                if (useMovingMarker === true && poi instanceof L.Polyline) {
+                    var numberOfDuration = [];
+
+                    // For each coordinate point in the polyline you have to specify motion duration
+                    poi.getLatLngs().forEach(function (item, index) {
+                        numberOfDuration.push(1000); // Duration is set to 1 seconds for each element
+                    });
+
+                    var movingMarker = L.Marker.movingMarker(poi.getLatLngs(), numberOfDuration, {autostart: true, loop: true}); // the marker will start automatically at the beginning of the polyline when the it arrives at the end
+                    movingMarker.setIcon(poi_info.icon);
+                    movingMarker.addTo(map);
+                }
+            }
+            if (marker_location_B != null && useMovingMarker === false) marker_location_B.addTo(map);
         }
 
         // Save PoI data to send it on the map's outputs
