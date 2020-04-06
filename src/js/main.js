@@ -212,7 +212,6 @@
                     dashArray: '10,10'
                 };
 
-                //TODO: Control
                 if (MashupPlatform.prefs.get("useDrawingPath") === false && MashupPlatform.prefs.get("useMovingMarker") === false) {
                     if (MashupPlatform.prefs.get("startPointMarkerLine").trim() !== "") {
                         startIcon = MashupPlatform.prefs.get("startPointMarkerLine").trim();
