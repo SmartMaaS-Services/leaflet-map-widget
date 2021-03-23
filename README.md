@@ -43,7 +43,7 @@ available:
         
 - Moving Marker Animation
   <p align="center">
-    <img src="src/doc/images/example_for_motion_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="560">
+    <img src="src/doc/images/example_for_moving_marker_animation.png" alt="Moving Marker Animation NGSIv2 Data" width="450" height="560">
   </p>
  
 - Snake Animation
