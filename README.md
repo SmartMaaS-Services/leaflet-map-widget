@@ -1,3 +1,5 @@
+[![](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/visualization.svg)](https://www.fiware.org/developers/catalogue/)
+
 # Leaflet map viewer widget
 
 The Leaflet map viewer widget is a [WireCloud widget](http://wirecloud.readthedocs.org/en/latest/).
