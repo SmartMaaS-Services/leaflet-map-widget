@@ -13,7 +13,7 @@ entity type.
 </p>
 
 <p align="center">
-    <img src="src/doc/images/leaflet-map_settings.png" alt="Operator Settings" width="450" height="340">
+    <img src="src/doc/images/leaflet-map_settings.png" alt="Operator Settings" idth="650" height="480">
 </p>
 
 The widget includes the following leaflet plugins, which you can use depending on your wishes and the NGSIv2 entities 
@@ -38,17 +38,17 @@ available:
 
 - Motion Animation
   <p align="center">
-    <img src="src/doc/images/example_for_motion_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="340">
+    <img src="src/doc/images/example_for_motion_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="560">
   </p>
         
 - Moving Marker Animation
   <p align="center">
-    <img src="src/doc/images/example_for_motion_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="340">
+    <img src="src/doc/images/example_for_motion_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="560">
   </p>
  
 - Snake Animation
   <p align="center">
-    <img src="src/doc/images/example_for_snake_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="340">
+    <img src="src/doc/images/example_for_snake_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="560">
   </p>
 
 and much more...
