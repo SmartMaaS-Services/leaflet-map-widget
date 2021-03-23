@@ -52,7 +52,8 @@ module.exports = function (grunt) {
                 files: [
                     {expand: true, cwd: 'src/js', src: '*', dest: 'build/src/js'},
                     {expand: true, cwd: 'node_modules/leaflet.motion/dist', src: 'leaflet.motion.min.js', dest: 'build/lib/lib/js/'},
-                    {expand: true, cwd: 'src/js/plugins', src: 'MovingMarker.js', dest: 'build/src/js/plugins'}
+                    {expand: true, cwd: 'src/js/plugins', src: 'MovingMarker.js', dest: 'build/src/js/plugins'},
+                    {expand: true, cwd: 'src/js/plugins', src: 'leaflet.textpath.js', dest: 'build/src/js/plugins'}
                 ]
             }
         },
@@ -141,6 +142,7 @@ module.exports = function (grunt) {
                 exclude: [
                     'src/js/main.js',
                     'src/js/plugins/MovingMarker.js',
+                    'src/js/plugins/leaflet.textpath.js',
                     'node_modules/leaflet.motion/dist/leaflet.motion.min.js'
                 ],
                 frameworks: ['jasmine'],

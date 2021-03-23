@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<widget xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="CoNWeT" name="leaflet-map" version="0.2.0">
+<widget xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="CoNWeT" name="leaflet-map" version="0.2.3">
 
     <details>
         <title>Leaflet map viewer</title>
@@ -24,6 +24,11 @@
         <preference name="maxzoom" label="Max Zoom" type="text" description="Maximum zoom allowed" default="18"/>
         <preference name="iconName" label="Marker Icon" type="text" description="Name of the icon. Leaflet.awesome-markers Plugin (e.g. L.AwesomeMarkers.icon({icon: 'coffee', markerColor: 'red'}) )" default=""/>
         <preference name="markerColor" label="Marker Color" type="text" description="Color of the marker. Leaflet.awesome-markers Plugin (e.g. L.AwesomeMarkers.icon({icon: 'coffee', markerColor: 'red'}) )" default=""/>
+        <preference name="useMulticolorPolyline" label="Use Multicolor for Polyline" type="boolean" description="Mark this option to set each polyline in a different color." default="false" />
+        <preference name="useHyphensPolyline" label="Use Hyphens for Polyline" type="boolean" description="Mark this option for displaying polylines with hyphens.." default="false" />
+        <preference name="polylineWeight" label="Weight for Polyline" type="text" description="Specify the weight with which polyline is to be displayed." default="4"/>
+
+        <preference name="useTooltip" label="Use Tooltip" type="boolean" description="Mark this option to use tooltip instead of popup" default="false" />
         <preference name="useClustering" label="Use Clustering" type="boolean" description="Mark this option to use clustering for displaying map features" default="false" />
         <preference name="useDrawingPath" label="Use Drawing Path Animation" type="boolean" description="Mark this option to activate an automatic drawing of the paths (polyline)." default="false" />
         <preference name="useMovingMarker" label="Use Moving Mark Animation" type="boolean" description="Mark this option to enable automatic movement of a marker on a path (polyline)." default="false" />

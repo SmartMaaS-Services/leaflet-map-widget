@@ -2,3 +2,38 @@
     background: transparent!important;
     border: none!important;
 }
+
+.custom-popup .leaflet-popup-content-wrapper {
+    /*background: transparent!important;
+    color: #333;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4);*/
+}
+.custom-popup .leaflet-popup-content-wrapper a {
+    /*color: rgba(255, 255, 255, 0.1);*/
+}
+.custom-popup .leaflet-popup-tip-container {
+    /*width: 30px;
+    height: 15px;*/
+}
+.custom-popup .leaflet-popup-tip {
+    /*background:  transparent!important;
+    border: none!important;
+    box-shadow: none!important;*/
+}
+
+/* custom style Tooltip */
+.leaflet-tooltip.custom-tooltip {
+    background: transparent!important;
+    border: none!important;
+    box-shadow: none!important;
+    color: #ff5573!important;
+    font-weight: bold!important;
+}
+.leaflet-tooltip-top.custom-tooltip:before,
+.leaflet-tooltip-bottom.custom-tooltip:before,
+.leaflet-tooltip-left.custom-tooltip:before,
+.leaflet-tooltip-right.custom-tooltip:before {
+    border: none!important;
+    background: transparent!important;
+    border-right-color: transparent!important;
+}

@@ -175,8 +175,9 @@
     };
 
     var build_base_style = function build_base_style(poi_info) {
-        var icon, markerColor, startIcon, endIcon, color;
+        var icon, markerColor, startIcon, endIcon, color, weight;
         color = colors[Math.floor(Math.random()*colors.length)];
+        weight = (!Number.isFinite(MashupPlatform.prefs.get("polylineWeight").trim()) === true) ? MashupPlatform.prefs.get("polylineWeight").trim() : 4;
 
         if ('location' in poi_info) {
             switch (poi_info.location.type) {
@@ -207,9 +208,9 @@
             case 'Polyline':
             case 'MultiPolyline':
                 poi_info.polyline_style = {
-                    color: color,
-                    weight: 4,
-                    dashArray: '10,10'
+                    color: (MashupPlatform.prefs.get("useMulticolorPolyline") === true) ? color : '#ff5573',
+                    weight: weight,
+                    dashArray: (MashupPlatform.prefs.get("useHyphensPolyline") === true) ? '10,10' : undefined
                 };
 
                 if (MashupPlatform.prefs.get("useDrawingPath") === false && MashupPlatform.prefs.get("useMovingMarker") === false) {
@@ -300,7 +301,7 @@
                         pointToLayer: function (feature, latlng) {
                             if (poi == null) {
                                 poi = L.marker(latlng,{icon: poi_info.icon });
-                                if (useclustering === true) markerClusterGroup.addLayer(poi)
+                                if (useclustering === true) markerClusterGroup.addLayer(poi);
                                 return poi;
                             } else {
                                 if (useclustering === true) {
@@ -311,7 +312,10 @@
                                     poi.setLatLng(latlng);
                                 }
                             }
-                        }
+                        },
+                        /*onEachFeature: function (feature, layer) {
+                            layer.bindTooltip(poi_info.title, {className: 'custom-tooltip', permanent: true, direction: 'right', offset: [15, -20]});
+                        }*/
                     });
                     break;
 
@@ -381,7 +385,7 @@
                             });
                         }
 
-                        L.geoJSON([{ "type": "LineString", "coordinates": poi_info.location.coordinates }], {
+                        L.geoJSON([{ "type": "Feature", "properties": { "name": poi_info.title}, "geometry": { "type": "LineString", "coordinates": poi_info.location.coordinates }}], {
                             style: function (feature) {
                                 // Adjustment of colors that cannot be displayed using L.Polyline.
                                 if(poi_info.polyline_style.color === 'lightred') line_color = 'salmon';
@@ -553,18 +557,26 @@
                 }
         }
 
-        // Popup Settings
-        if (poi_info.title && (poi_info.id !== poi_info.title)) {
+        // Tooltip Settings
+        if (MashupPlatform.prefs.get("useTooltip") !== false) {
+            poi.bindTooltip(poi_info.title, {className: 'custom-tooltip', sticky: true, direction: 'right', offset: [15, -20]});
+
+        } else {
+            // Popup Settings
             if (poi_info.infoWindow) {
                 poi.bindPopup("<b>" + poi_info.title + "</b><br>" + poi_info.infoWindow);
             } else {
                 poi.bindPopup("<b>" + poi_info.title + "</b>");
             }
-        } else {
-            if (poi_info.infoWindow) {
-                poi.bindPopup("<b>" + poi_info.infoWindow + "</b>");
-            } else {
-                poi.bindPopup("<b>" + poi_info.id + "</b>");
+
+            if (poi instanceof L.Polyline) {
+                poi.on('mouseover', function () {
+                    this.setText(poi_info.title, {offset: -10, center: true, attributes: { fill: '#ff5573' }});
+                });
+
+                poi.on('mouseout', function () {
+                    this.setText(null);
+                });
             }
         }
 
@@ -595,6 +607,7 @@
                     movingMarker.addTo(map);
                 }
             }
+            if ((poi instanceof L.Marker || poi instanceof L.Polygon) && (useDrawingPathAnimation === false && useMovingMarker === false)) poi.addTo(map);
             if (marker_location_B != null && useMovingMarker === false) marker_location_B.addTo(map);
         }
 
@@ -773,7 +786,7 @@
 
     // TODO extraMakers are not sent
     var sendSelectedPoI = function sendSelectedPoI() {
-        MashupPlatform.widget.outputs.poiListOutput.pushEvent(this.data);
+        MashupPlatform.widget.outputs.poiOutput.pushEvent(this.data);
     };
 
     // Add a heatmap layer
