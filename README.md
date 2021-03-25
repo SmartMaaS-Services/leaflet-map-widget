@@ -11,11 +11,7 @@ With this widget you have different possibilities to visualize and display your 
 entity type.
 
 <p align="center">
-    <img src="src/doc/images/leaflet-map_operator.png" alt="Leaflet Map Operator" width="450" height="340">
-</p>
-
-<p align="center">
-    <img src="src/doc/images/leaflet-map_settings.png" alt="Operator Settings" idth="650" height="480">
+    <img src="src/doc/images/leaflet-map_operator.png" alt="Leaflet Map Operator" width="80%">
 </p>
 
 The widget includes the following leaflet plugins, which you can use depending on your wishes and the NGSIv2 entities 
@@ -28,19 +24,39 @@ available:
 
 ## Examples of visualization options
 
+To know what colors and icons are available to you, take a closer look at the plugin [Leaflet.awesome-markers](https://github.com/lvoogdt/Leaflet.awesome-markers).
+
+- Example with default tooltip  
+  <p align="center">
+    <img src="src/doc/images/example_1.png" alt="Example 1 NGSIv2 Data" width="80%">
+  </p>
+  
+  <p align="center">
+    <img src="src/doc/images/settings_1.png" alt="Example 1 NGSIv2 Data" width="80%">
+  </p>  
+  
+- Example with small tooltip and clustering
+  <p align="center">
+    <img src="src/doc/images/example_2.png" alt="Example 2" width="80%">
+  </p>
+  
+  <p align="center">
+    <img src="src/doc/images/settings_2.png" alt="Example 2" width="80%">
+  </p>
+
 - Motion Animation
   <p align="center">
-    <img src="src/doc/images/example_for_motion_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="560">
+    <img src="src/doc/images/example_for_motion_animation.png" alt="Motion Animation NGSIv2 Data" width="80%">
   </p>
         
 - Moving Marker Animation
   <p align="center">
-    <img src="src/doc/images/example_for_moving_marker_animation.png" alt="Moving Marker Animation NGSIv2 Data" width="450" height="560">
+    <img src="src/doc/images/example_for_moving_marker_animation.png" alt="Moving Marker Animation NGSIv2 Data" width="80%">
   </p>
  
 - Snake Animation
   <p align="center">
-    <img src="src/doc/images/example_for_snake_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="560">
+    <img src="src/doc/images/example_for_snake_animation.png" alt="Motion Animation NGSIv2 Data" width="80%">
   </p>
 
 and much more...
