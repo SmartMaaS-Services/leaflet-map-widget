@@ -28,16 +28,6 @@ available:
 
 ## Examples of visualization options
 
-- AirQualityObserved
-  <p align="center">
-    <img src="src/doc/images/example_for_AirQualityObserved.png" alt="AirQualityObserved NGSIv2 Data" width="450" height="340">
-  </p>
-
-- WeatherObserved
-  <p align="center">
-    <img src="src/doc/images/example_for_WeatherObserved.png" alt="WeatherObserved NGSIv2 Data" width="450" height="340">
-  </p>
-
 - Motion Animation
   <p align="center">
     <img src="src/doc/images/example_for_motion_animation.png" alt="Motion Animation NGSIv2 Data" width="450" height="560">
