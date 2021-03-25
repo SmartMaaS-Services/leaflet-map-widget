@@ -26,7 +26,7 @@ available:
 
 To know what colors and icons are available to you, take a closer look at the plugin [Leaflet.awesome-markers](https://github.com/lvoogdt/Leaflet.awesome-markers).
 
-- Example with default tooltip  
+- Example with small tooltip and clustering  
   <p align="center">
     <img src="src/doc/images/example_1.png" alt="Example 1 NGSIv2 Data" width="80%">
   </p>
@@ -35,7 +35,7 @@ To know what colors and icons are available to you, take a closer look at the pl
     <img src="src/doc/images/settings_1.png" alt="Example 1 NGSIv2 Data" width="80%">
   </p>  
   
-- Example with small tooltip and clustering
+- Example with default tooltip
   <p align="center">
     <img src="src/doc/images/example_2.png" alt="Example 2" width="80%">
   </p>
