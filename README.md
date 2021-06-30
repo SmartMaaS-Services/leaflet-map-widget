@@ -1,6 +1,32 @@
+<h2 align="center">
+  <a href="https://smart-maas.eu/en/"><img src="https://github.com/SmartMaaS-Services/Transaction-Context-Manager/blob/main/docs/images/Header.jpeg" alt="Smart MaaS" width="500"></a>
+  <br>
+      SMART MOBILITY SERVICE PLATFORM
+  <br>
+  <a href="https://smart-maas.eu/en/"><img src="https://github.com/SmartMaaS-Services/Transaction-Context-Manager/blob/main/docs/images/Logos-Smart-MaaS.png" alt="Smart MaaS" width="250"></a>
+  <br>
+</h2>
+
+<p align="center">
+  <a href="mailto:info@smart-maas.eu">Contact</a> •
+  <a href="https://github.com/SmartMaaS-Services/Transaction-Context-Manager/issues">Issues</a> •
+  <a href="https://smart-maas.eu/en/">Project Page</a>
+</p>
+
+
+***
+
+<h1 align="center">
+  <a>
+    Leaflet map viewer widget
+  </a>
+</h1>
+
+***
+
+
 [![](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/visualization.svg)](https://www.fiware.org/developers/catalogue/)
 
-# Leaflet map viewer widget
 
 The Leaflet map viewer widget is a [WireCloud widget](http://wirecloud.readthedocs.org/en/latest/).
 
